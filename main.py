@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
+import re
 
 app = Flask(__name__)
-import re
 
 uri = os.environ.get("DATABASE_URL", "sqlite:///users.db")
 if uri.startswith("postgres://"):  # Railway usa `postgres://` ao invés de `postgresql://`
@@ -50,4 +50,5 @@ def delete_user(id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
