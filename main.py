@@ -1,17 +1,25 @@
 from flask import Flask
 import psycopg2
 import os
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
 def check_connection():
     try:
+        # Obtendo a URL de conexão do Railway
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url:
+            return "Erro: DATABASE_URL não foi encontrada nas variáveis de ambiente."
+
+        # Parseando a URL para extrair os dados
+        result = urlparse(database_url)
         conn = psycopg2.connect(
-            dbname=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT")
+            dbname=result.path[1:],
+            user=result.username,
+            password=result.password,
+            host=result.hostname,
+            port=result.port
         )
         conn.close()
         return "Conexão bem-sucedida!"
