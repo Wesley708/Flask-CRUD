@@ -3,7 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
+import re
+
+uri = os.environ.get("DATABASE_URL", "sqlite:///users.db")
+if uri.startswith("postgres://"):  # Railway usa `postgres://` ao invés de `postgresql://`
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
+
 db = SQLAlchemy(app)
 
 class User(db.Model):
